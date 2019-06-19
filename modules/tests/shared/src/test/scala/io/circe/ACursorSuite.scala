@@ -184,7 +184,7 @@ class ACursorSuite extends CirceSuite {
     val result = for {
       c <- cursor.downField("a").success
       a <- c.downN(3).success
-      r <- a.success
+      r <- a.right.success
     } yield r
 
     assert(result.flatMap(_.focus) === Some(5.asJson))
@@ -193,14 +193,14 @@ class ACursorSuite extends CirceSuite {
   it should "fail to select a value that doesn't exist" in {
     val result = for {
       c <- cursor.downField("b").success
-      r <- c.success
+      r <- c.right.success
     } yield r
 
     assert(result.flatMap(_.focus) === None)
   }
 
   it should "fail at the top" in forAll { (j: Json) =>
-    val result = HCursor.fromJson(j)
+    val result = HCursor.fromJson(j).right
 
     assert(result.failed && result.history === List(CursorOp.MoveRight))
   }
